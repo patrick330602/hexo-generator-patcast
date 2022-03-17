@@ -6,7 +6,6 @@ const path = require('path')
 let config = hexo.config.podcast = Object.assign({
   type: 'rss2',
   limit: 20,
-  hub: '',
   content: true,
 }, hexo.config.podcast)
 
