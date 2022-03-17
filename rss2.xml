@@ -1,40 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>{{ config.title | xml_escape }}</title>
     <link>{{ config.url }}{{ config.baseurl }}/</link>
-    <copyright>{{ config.copyright }}</copyright>
-    <itunes:subtitle></itunes:subtitle>
+    <copyright>{{ config.podcast.copyright }}</copyright>
+    <itunes:subtitle>{{ config.subtitle }}</itunes:subtitle>
     <itunes:author>{{ config.author }}</itunes:author>
-    <itunes:summary>{{ config.description | xml_escape }}</itunes:summary>
-    <description>{{ config.description | xml_escape }}</description>
+    <itunes:summary>{{ config.podcast.summary | config.podcast.description | config.description | xml_escape }}</itunes:summary>
+    <description>{{ config.podcast.description | config.podcast.description | xml_escape }}</description>
     <itunes:owner>
       <itunes:name>{{ config.podcast.owner }}</itunes:name>
       <itunes:email>{{ config.podcast.email }}</itunes:email>
     </itunes:owner>
     <itunes:image href="{{ config.url }}{{ config.default_thumb }}"/>
-    <itunes:category text="{{ config.podcast.category }}">
-      <itunes:category text="{{ config.podcast.category }}"/>
+    {%- for item in config.podcast.category -%}
+      {% if item.includes("-") %}
+        {% set arr = item.split("-") -%}
+    <itunes:category text="{{ arr[0] | trim }}">
+        {%- for i in range(1, arr|length) %}
+      <itunes:category text="{{ arr[i] | trim }}"/>
+        {%- endfor -%}
+      {% else %}
+    <itunes:category text="{{ item }}">
+      {% endif -%}
     </itunes:category>
+    {%- endfor %}
     <itunes:explicit>{{ config.podcast.explicit }}</itunes:explicit>
     <language>{{ config.podcast.language }}</language>
     {% for post in podcast_posts %}
     <item>
       <title>{{ post.title | xml_escape}}</title>
-      <description><![CDATA[{{ post.content | noControlChars | safe }}]]></description>
-      <itunes:author>{{ config.author }}</itunes:author>
-      <itunes:subtitle>{{ post.subtitle }}</itunes:subtitle>
-      <itunes:summary>{{ post.excerpt | noControlChars | strip_html | xml_escape }}</itunes:summary>
+      <description><![CDATA[{{ post.content | noControlChars | shorten_from_begin | safe  }}]]></description>
+      <itunes:author>{{ config.podcast.author }}</itunes:author>
+      {% if post.image -%}
       <itunes:image href="{{ config.podcast.url }}{{ post.image }}"/>
-      <enclosure url="{{ config.podcast.url }}{{ post.media }}" length="{{ post.length }}" type="{{ post.mediatype }}"/>
-      <guid>{{ post.permalink }}</guid>
+      {% else -%}
+      <itunes:image href="{{ config.url }}{{ config.default_thumb }}"/>
+      {% endif -%}
+      <enclosure url="{{ config.podcast.url }}{{ post.media }}" length="{{ post.length }}" type="{{ post.type }}"/>
+      <link>{{ post.permalink }}</link>
       <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
       <itunes:duration>{{ post.duration }}</itunes:duration>
       <psc:chapters version="1.2" xmlns:psc="http://podlove.org/simple-chapters">
-        {% for chapter in post.chapters %}
+        {% for chapter in post.chapters -%}
         <psc:chapter start="{{ chapter[0] }}" title="{{ chapter[1] | xml_escape }}"/>
-        {% endfor %}
+        {% endfor -%}
       </psc:chapters>
+      {% if post.explicit -%}
+      <itunes:explicit>{{ post.explicit }}</itunes:explicit>
+      {% else %}
+      <itunes:explicit>false</itunes:explicit>
+      {% endif -%}
     </item>
     {% endfor %}
   </channel>
