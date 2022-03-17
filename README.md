@@ -21,8 +21,8 @@ podcast:
     type: rss2
     path: podcast.xml
     limit: 20
-    hub:
     url: https://URL/to/static/resources
+    summary:
     description: 
     language: zh-CN
     copyright: "COPYRIGHT"
@@ -50,6 +50,7 @@ chapter:
     ["00:00:00.000", "Title 1"],
     ["OTHER STARTTIME", "Another title"]
   ]
+explicit: false
 ---
 Some Excerpt.
 
