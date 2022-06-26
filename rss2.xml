@@ -25,12 +25,19 @@
       {% endif -%}
     </itunes:category>
     {%- endfor %}
-    <itunes:explicit>{{ config.podcast.explicit }}</itunes:explicit>
+    {% if config.podcast.explicit -%}
+     <itunes:explicit>{{ config.podcast.explicit }}</itunes:explicit>
+    {% else %}
+    <itunes:explicit>false</itunes:explicit>
+    {% endif -%}
     <language>{{ config.podcast.language }}</language>
     {% for post in podcast_posts %}
     <item>
       <title>{{ post.title | xml_escape}}</title>
+      <itunes:title>{{ post.title | xml_escape}}</itunes:title>
+      <itunes:subtitle>{{ post.subtitle | xml_escape}}</itunes:subtitle>
       <description><![CDATA[{{ post.content | noControlChars | shorten_from_begin | safe  }}]]></description>
+      <itunes:summary><![CDATA[{{ post.content | noControlChars | shorten_from_begin | safe  }}]]></itunes:summary>
       <itunes:author>{{ config.podcast.author }}</itunes:author>
       {% if post.image -%}
       <itunes:image href="{{ config.podcast.url }}{{ post.image }}"/>
