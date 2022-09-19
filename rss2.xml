@@ -47,6 +47,9 @@
       <enclosure url="{{ config.podcast.url }}{{ post.media }}" length="{{ post.length }}" type="{{ post.type }}"/>
       <link>{{ post.permalink }}</link>
       <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
+      {% if post.season -%}
+      <itunes:season>{{ post.season }}</itunes:season>
+      {% endif -%}
       <itunes:duration>{{ post.duration }}</itunes:duration>
       <psc:chapters version="1.2" xmlns:psc="http://podlove.org/simple-chapters">
         {% for chapter in post.chapters -%}
